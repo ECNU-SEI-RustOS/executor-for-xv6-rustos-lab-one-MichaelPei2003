@@ -192,6 +192,15 @@ impl Syscall for Proc {
         if result.is_err() {
             syscall_warning(error);
         }
+
+        if result.is_ok() {
+            let guard = self.excl.lock();
+            if guard.pid == 1 {
+                let data = self.data.get_mut();
+                data.pagetable.as_ref().unwrap().vm_print(0);
+            }
+            drop(guard);
+        }
         result
     }
 
